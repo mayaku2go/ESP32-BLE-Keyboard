@@ -501,17 +501,19 @@ size_t BleKeyboard::write(const uint8_t *buffer, size_t size) {
 
 void BleKeyboard::onConnect(BLEServer* pServer) {
   this->connected = true;
-
+    
 #if !defined(USE_NIMBLE)
-
-  BLE2902* desc = (BLE2902*)this->inputKeyboard->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
-  desc->setNotifications(true);
-  desc = (BLE2902*)this->inputMediaKeys->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
-  desc->setNotifications(true);
-
+	uint8_t val[] = {0x01, 0x00};				//Reconnect Issue Workaround
+	BLE2902* desc = (BLE2902*)this->inputKeyboard->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
+	desc->setNotifications(true);
+	desc->setValue(val, 2);						//Reconnect Issue Workaround
+	desc = (BLE2902*)this->inputMediaKeys->getDescriptorByUUID(BLEUUID((uint16_t)0x2902));
+	desc->setNotifications(true);
+    desc->setValue(val, 2);						//Reconnect Issue Workaround
 #endif // !USE_NIMBLE
 
 }
+
 
 void BleKeyboard::onDisconnect(BLEServer* pServer) {
   this->connected = false;
